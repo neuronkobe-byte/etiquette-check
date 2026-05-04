@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>麻雀エチケットチェック｜ニューロン麻雀スクール神戸校</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Kaisei+Decol:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange:      #e8722a;
+    --orange-mid:  #f08c4a;
+    --orange-light:#fbb36e;
+    --orange-pale: #fde8d4;
+    --peach:       #fff4ec;
+    --peach-dark:  #fde0c8;
+    --cream:       #fffaf6;
+    --brown:       #6b3d1e;
+    --brown-light: #9a6040;
+    --brown-pale:  #c8966a;
+    --white:       #ffffff;
+    --ink:         #3a2010;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: linear-gradient(160deg, #fff0e4 0%, #ffe8d4 50%, #ffdfc8 100%);
+    font-family: 'Noto Sans JP', sans-serif;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(232,114,42,0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 20px 14px 56px;
+    position: relative;
+    z-index: 1;
+  }
+  .school-band {
+    text-align: center;
+    padding: 10px 16px;
+    background: var(--orange);
+    border-radius: 16px 16px 0 0;
+    letter-spacing: 2px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .header {
+    text-align: center;
+    padding: 22px 24px 20px;
+    background: linear-gradient(150deg, #fff6ef 0%, #fdeadc 100%);
+    border-left: 3px solid var(--orange-light);
+    border-right: 3px solid var(--orange-light);
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: 'MAHJONG';
+    position: absolute;
+    font-size: 48px;
+    font-weight: 900;
+    opacity: 0.04;
+    top: 10px;
+    right: -8px;
+    letter-spacing: -2px;
+    color: var(--orange);
+    transform: rotate(-8deg);
+  }
+  .header::after {
+    content: '✿';
+    position: absolute;
+    font-size: 60px;
+    opacity: 0.07;
+    bottom: -10px;
+    left: 4px;
+    transform: rotate(20deg);
+  }
+  .header-icon { font-size: 34px; margin-bottom: 6px; display: block; }
+  .header h1 {
+    font-family: 'Kaisei Decol', serif;
+    font-size: 24px;
+    color: var(--orange);
+    letter-spacing: 3px;
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+  .header-sub {
+    font-size: 11px;
+    color: var(--brown-light);
+    letter-spacing: 1px;
+    background: var(--orange-pale);
+    display: inline-block;
+    padding: 3px 14px;
+    border-radius: 20px;
+  }
+  .progress-bar-wrap {
+    background: var(--white);
+    border-left: 3px solid var(--orange-light);
+    border-right: 3px solid var(--orange-light);
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--peach-dark);
+  }
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 7px;
+  }
+  .progress-label { font-size: 11px; color: var(--brown-light); letter-spacing: 1px; }
+  .progress-count { font-size: 18px; font-weight: 900; color: var(--orange); }
+  .progress-track { height: 8px; background: var(--orange-pale); border-radius: 8px; overflow: hidden; }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--orange), var(--orange-light));
+    border-radius: 8px;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+  }
+  .section-divider {
+    background: var(--white);
+    border-left: 3px solid var(--orange-light);
+    border-right: 3px solid var(--orange-light);
+  }
+  .section-header {
+    background: linear-gradient(90deg, var(--orange-pale), #fff8f3);
+    border-top: 1px solid var(--peach-dark);
+    border-bottom: 1px solid var(--peach-dark);
+    border-left: 4px solid var(--orange);
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .section-header span { font-size: 11px; color: var(--brown); letter-spacing: 1.5px; font-weight: 700; }
+  .section-icon { font-size: 14px; }
+  .checklist {
+    background: var(--white);
+    border: 3px solid var(--orange-light);
+    border-top: none;
+    border-radius: 0 0 16px 16px;
+    overflow: hidden;
+  }
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--peach-dark);
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    opacity: 0;
+    animation: fadeSlide 0.35s ease forwards;
+  }
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .check-item:last-child { border-bottom: none; }
+  .check-item:hover { background: #fff8f3; }
+  .check-item.checked { background: #fff3ea; }
+  .item-number {
+    min-width: 42px;
+    width: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--brown-pale);
+    border-right: 1px solid var(--peach-dark);
+    padding: 14px 0;
+    align-self: stretch;
+    transition: all 0.2s;
+  }
+  .check-item.checked .item-number { background: var(--orange); color: #fff; font-size: 16px; }
+  .item-body { flex: 1; padding: 13px 12px; }
+  .item-title { font-size: 13.5px; font-weight: 700; color: var(--ink); margin-bottom: 3px; line-height: 1.5; transition: color 0.2s; }
+  .item-desc { font-size: 11.5px; color: var(--brown-light); line-height: 1.65; font-weight: 400; }
+  .check-item.checked .item-title { color: var(--orange); }
+  .check-item.checked .item-desc  { color: #c8906a; }
+  .check-box { min-width: 38px; display: flex; align-items: center; justify-content: center; padding: 14px 8px; align-self: stretch; }
+  .check-circle {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 2px solid var(--peach-dark);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--cream);
+  }
+  .check-item.checked .check-circle {
+    background: var(--orange); border-color: var(--orange);
+    transform: scale(1.1); box-shadow: 0 2px 8px rgba(232,114,42,0.35);
+  }
+  .check-mark {
+    opacity: 0; transform: scale(0) rotate(-30deg);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #fff; font-weight: 900; font-size: 13px;
+  }
+  .check-item.checked .check-mark { opacity: 1; transform: scale(1) rotate(0deg); }
+  .ripple {
+    position: absolute; border-radius: 50%;
+    background: rgba(232,114,42,0.2);
+    animation: rippleAnim 0.5s ease-out forwards;
+    pointer-events: none;
+  }
+  @keyframes rippleAnim {
+    0% { transform: scale(0); opacity: 1; }
+    100% { transform: scale(4); opacity: 0; }
+  }
+  .tile-deco {
+    display: flex; justify-content: center; gap: 5px;
+    padding: 12px 14px;
+    background: linear-gradient(90deg, #fff6ef, #fdeadc, #fff6ef);
+    border: 3px solid var(--orange-light);
+    border-top: none;
+    border-radius: 0 0 16px 16px;
+  }
+  .tile {
+    width: 22px; height: 28px;
+    background: var(--white); border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(200,100,50,0.15), inset 0 1px 0 rgba(255,255,255,0.9);
+    transition: all 0.3s;
+    border: 1px solid var(--peach-dark);
+  }
+  .tile.lit {
+    background: linear-gradient(145deg, var(--orange-light), var(--orange));
+    border-color: var(--orange);
+    transform: translateY(-4px);
+    box-shadow: 0 5px 12px rgba(232,114,42,0.4);
+  }
+  .judge-btn-wrap { text-align: center; margin-top: 18px; display: none; }
+  .judge-btn {
+    background: linear-gradient(135deg, var(--orange) 0%, var(--orange-light) 100%);
+    color: #fff; border: none;
+    padding: 16px 48px; border-radius: 50px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px; font-weight: 900; letter-spacing: 2px;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 4px 18px rgba(232,114,42,0.45);
+    animation: btnPulse 1.8s ease-in-out infinite;
+  }
+  @keyframes btnPulse {
+    0%, 100% { box-shadow: 0 4px 18px rgba(232,114,42,0.4); }
+    50%       { box-shadow: 0 6px 28px rgba(232,114,42,0.65); }
+  }
+  .judge-btn:hover  { transform: translateY(-2px); }
+  .judge-btn:active { transform: translateY(0); animation: none; }
+  .result-panel {
+    margin-top: 18px; border-radius: 16px; overflow: hidden;
+    border: 3px solid var(--orange-light);
+    opacity: 0; transform: translateY(14px);
+    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+  }
+  .result-panel.visible { opacity: 1; transform: translateY(0); pointer-events: all; }
+  .result-inner { background: linear-gradient(150deg, #fff6ef 0%, #fdeadc 100%); padding: 28px 22px; text-align: center; }
+  .result-rank { font-size: 52px; margin-bottom: 6px; animation: rankPop 0.45s cubic-bezier(0.4,0,0.2,1); }
+  @keyframes rankPop {
+    0% { transform: scale(0.5); opacity: 0; }
+    70% { transform: scale(1.18); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .result-stars { font-size: 22px; letter-spacing: 5px; margin-bottom: 10px; }
+  .result-title { font-family: 'Kaisei Decol', serif; font-size: 22px; color: var(--orange); font-weight: 700; letter-spacing: 2px; margin-bottom: 10px; }
+  .result-badge {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    letter-spacing: 2px; padding: 3px 14px; border-radius: 20px; margin-bottom: 12px;
+  }
+  .badge-gold    { background: #f6a800; color: #fff; }
+  .badge-silver  { background: #a0b8c8; color: #fff; }
+  .badge-bronze  { background: var(--orange-mid); color: #fff; }
+  .badge-improve { background: #c07850; color: #fff; }
+  .result-score { font-size: 13px; color: var(--brown-light); margin-bottom: 14px; line-height: 1.8; }
+  .result-message {
+    font-size: 13px; color: var(--brown); line-height: 1.9; margin-bottom: 20px;
+    white-space: pre-line;
+    background: var(--white); padding: 12px 16px; border-radius: 10px;
+    border: 1px solid var(--peach-dark);
+  }
+  .reset-btn {
+    background: var(--white); color: var(--orange);
+    border: 2px solid var(--orange);
+    padding: 11px 28px; border-radius: 50px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 13px; font-weight: 700; letter-spacing: 1px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .reset-btn:hover { background: var(--orange); color: #fff; transform: translateY(-1px); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="school-band">🀄 ニューロン麻雀スクール 神戸校</div>
+
+  <div class="header">
+    <span class="header-icon">✿</span>
+    <h1>麻雀エチケット<br>チェック20</h1>
+    <div class="header-sub">対局マナー 全20箇条</div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-info">
+      <span class="progress-label">チェック済み</span>
+      <span class="progress-count"><span id="count">0</span> / 20</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div class="checklist" id="checklist">
+
+    <div class="section-divider">
+      <div class="section-header">
+        <span class="section-icon">🀄</span>
+        <span>対局動作 ── スムーズで美しい進行</span>
+      </div>
+    </div>
+
+    <div class="check-item" data-index="0" style="animation-delay:0.05s">
+      <div class="item-number">1</div>
+      <div class="item-body"><div class="item-title">利き手での打牌</div><div class="item-desc">左右どちらかの手で統一し、対局中に変えない。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="1" style="animation-delay:0.08s">
+      <div class="item-number">2</div>
+      <div class="item-body"><div class="item-title">先ヅモの厳禁</div><div class="item-desc">上家（かみちゃ：自分の左に座っている人）が牌を捨て終わる前に、山の牌に触れない。ポン・チー・ロンを宣言する間を必ず確保する。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="2" style="animation-delay:0.11s">
+      <div class="item-number">3</div>
+      <div class="item-body"><div class="item-title">ツモ牌の入れ替え順序</div><div class="item-desc">ツモ牌はすぐに手牌に入れず、不要牌を捨ててから手牌に加える。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="3" style="animation-delay:0.14s">
+      <div class="item-number">4</div>
+      <div class="item-body"><div class="item-title">捨て牌の強打禁止</div><div class="item-desc">牌を叩きつけたり、大きな音を立てて捨てない。周りへの配慮を忘れずに。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="4" style="animation-delay:0.17s">
+      <div class="item-number">5</div>
+      <div class="item-body"><div class="item-title">適切な打牌速度</div><div class="item-desc">長考しすぎず、卓全体のテンポを意識して打牌する。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="5" style="animation-delay:0.20s">
+      <div class="item-number">6</div>
+      <div class="item-body"><div class="item-title">開門は親の役目</div><div class="item-desc">開門（かいもん＝サイコロの目に従って山牌を取り始める場所を決める動作）は、自分の前の山でも必ず親が行う。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="6" style="animation-delay:0.23s">
+      <div class="item-number">7</div>
+      <div class="item-body"><div class="item-title">他者の山や牌に触れない</div><div class="item-desc">自分の守備範囲外の山や、他者がアガった裏ドラを勝手に触らない。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="7" style="animation-delay:0.26s">
+      <div class="item-number">8</div>
+      <div class="item-body"><div class="item-title">牌を崩した際の謝罪</div><div class="item-desc">牌を露出させてしまったら「すみません」と一言添える。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+
+    <div class="section-divider">
+      <div class="section-header">
+        <span class="section-icon">🗣️</span>
+        <span>発声と言葉 ── 対等で清々しい対局</span>
+      </div>
+    </div>
+
+    <div class="check-item" data-index="8" style="animation-delay:0.29s">
+      <div class="item-number">9</div>
+      <div class="item-body"><div class="item-title">明確な発声</div><div class="item-desc">全員に聞こえる声で「ポン」「ロン」等をハッキリ宣言する。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="9" style="animation-delay:0.32s">
+      <div class="item-number">10</div>
+      <div class="item-body"><div class="item-title">発声優先の徹底</div><div class="item-desc">動作より先に声を出す。遅い発声はトラブルの元。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="10" style="animation-delay:0.35s">
+      <div class="item-number">11</div>
+      <div class="item-body"><div class="item-title">三味線行為の禁止</div><div class="item-desc">手牌に関する独り言や、紛らわしい言動（三味線）を控える。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="11" style="animation-delay:0.38s">
+      <div class="item-number">12</div>
+      <div class="item-body"><div class="item-title">不機嫌な態度の禁止</div><div class="item-desc">舌打ち、ため息、ツキがないことへのマイナス発言をしない。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="12" style="animation-delay:0.41s">
+      <div class="item-number">13</div>
+      <div class="item-body"><div class="item-title">私語の最小限化</div><div class="item-desc">対局中は私語を控え、全員が集中できる環境を作る。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="13" style="animation-delay:0.44s">
+      <div class="item-number">14</div>
+      <div class="item-body"><div class="item-title">批判・助言の禁止</div><div class="item-desc">対局中・終了後を問わず、他人の打ち筋に口出し（教え魔）をしない。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+
+    <div class="section-divider">
+      <div class="section-header">
+        <span class="section-icon">🙏</span>
+        <span>姿勢と配慮 ── 同卓者への敬意</span>
+      </div>
+    </div>
+
+    <div class="check-item" data-index="14" style="animation-delay:0.47s">
+      <div class="item-number">15</div>
+      <div class="item-body"><div class="item-title">正しい着席姿勢</div><div class="item-desc">立て膝、貧乏ゆすり、腕組み、足組みを控える。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="15" style="animation-delay:0.50s">
+      <div class="item-number">16</div>
+      <div class="item-body"><div class="item-title">点棒授受の丁寧化</div><div class="item-desc">点棒は手渡しせず、投げたり滑らせたりもしない。相手の取りやすい場所に丁寧に置く。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="16" style="animation-delay:0.53s">
+      <div class="item-number">17</div>
+      <div class="item-body"><div class="item-title">スマホ操作の自粛</div><div class="item-desc">対局中はスマホを触らず、卓上の進行に集中する。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="17" style="animation-delay:0.56s">
+      <div class="item-number">18</div>
+      <div class="item-body"><div class="item-title">観戦時のエチケット</div><div class="item-desc">後ろから覗き見たり、表情で手牌を察知させたりしない。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="18" style="animation-delay:0.59s">
+      <div class="item-number">19</div>
+      <div class="item-body"><div class="item-title">アガリ牌の公開</div><div class="item-desc">アガった後は、全員が確認しやすいよう手牌を綺麗に倒す。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+    <div class="check-item" data-index="19" style="animation-delay:0.62s">
+      <div class="item-number">20</div>
+      <div class="item-body"><div class="item-title">感謝の挨拶</div><div class="item-desc">開始時の「お願いします」、終了時の「ありがとうございました」を欠かさない。</div></div>
+      <div class="check-box"><div class="check-circle"><span class="check-mark">✓</span></div></div>
+    </div>
+
+  </div>
+
+  <div class="tile-deco" id="tileDeco">
+    <div class="tile">🀇</div><div class="tile">🀈</div><div class="tile">🀉</div>
+    <div class="tile">🀊</div><div class="tile">🀋</div><div class="tile">🀌</div>
+    <div class="tile">🀍</div><div class="tile">🀎</div><div class="tile">🀏</div>
+  </div>
+
+  <div class="judge-btn-wrap" id="judgeBtnWrap">
+    <button class="judge-btn" onclick="judgeNow()">✿　結果を見る　✿</button>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <div class="result-inner">
+      <div class="result-rank" id="resultRank"></div>
+      <div class="result-stars" id="resultStars"></div>
+      <div class="result-title" id="resultTitle"></div>
+      <div class="result-score" id="resultScore"></div>
+      <div class="result-message" id="resultMessage"></div>
+      <button class="reset-btn" onclick="resetAll()">もう一度チェックする</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const items        = document.querySelectorAll('.check-item');
+  const countEl      = document.getElementById('count');
+  const progressFill = document.getElementById('progressFill');
+  const resultPanel  = document.getElementById('resultPanel');
+  const judgeBtnWrap = document.getElementById('judgeBtnWrap');
+  const tiles        = document.querySelectorAll('.tile');
+  let checked = new Array(20).fill(false);
+
+  const ranks = [
+    { min: 20, emoji: '🏆', stars: '⭐⭐⭐⭐⭐', badge: 'BEST MANNER', badgeClass: 'badge-gold', title: 'ベストマナー！', message: '全項目⭕️！完璧です。\n礼節ある対局ができる真の麻雀プレイヤーです。\nぜひ周囲の模範となってください！' },
+    { min: 16, emoji: '🌸', stars: '⭐⭐⭐⭐',   badge: 'GOOD MANNER', badgeClass: 'badge-silver', title: 'そこそこマナー', message: 'とても良いマナーです！\nあと少しで完璧。残りの項目も意識して、\nベストマナーを目指しましょう。' },
+    { min: 14, emoji: '🎌', stars: '⭐⭐⭐',     badge: 'KEEP GOING',  badgeClass: 'badge-bronze', title: '頑張りましょう', message: 'マナーの基礎は身についています。\nチェックできなかった項目を振り返り、\n次の対局でさらに意識してみましょう。' },
+    { min: 0,  emoji: '📖', stars: '⭐⭐',       badge: 'NEED IMPROVEMENT', badgeClass: 'badge-improve', title: '改善しましょう', message: 'まだ改善できる点がいくつかあります。\nリストをじっくり読み直して、\n一つひとつ丁寧に意識してみましょう。' },
+  ];
+
+  items.forEach((item, idx) => {
+    item.addEventListener('click', (e) => {
+      checked[idx] = !checked[idx];
+      item.classList.toggle('checked', checked[idx]);
+      const rect = item.getBoundingClientRect();
+      const ripple = document.createElement('div');
+      ripple.className = 'ripple';
+      const size = 60;
+      ripple.style.cssText = 'width:'+size+'px;height:'+size+'px;left:'+(e.clientX-rect.left-size/2)+'px;top:'+(e.clientY-rect.top-size/2)+'px';
+      item.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 500);
+      updateProgress();
+    });
+  });
+
+  function updateProgress() {
+    const total = checked.filter(Boolean).length;
+    countEl.textContent = total;
+    progressFill.style.width = (total / 20 * 100) + '%';
+    const lit = Math.round(total / 20 * tiles.length);
+    tiles.forEach((t, i) => t.classList.toggle('lit', i < lit));
+    judgeBtnWrap.style.display = (total > 0) ? 'block' : 'none';
+    resultPanel.classList.remove('visible');
+  }
+
+  function judgeNow() {
+    const total = checked.filter(Boolean).length;
+    const rank  = ranks.find(r => total >= r.min);
+    document.getElementById('resultRank').textContent  = rank.emoji;
+    document.getElementById('resultStars').textContent = rank.stars;
+    document.getElementById('resultTitle').textContent = rank.title;
+    document.getElementById('resultScore').innerHTML   =
+      '<span class="result-badge '+rank.badgeClass+'">'+rank.badge+'</span><br>'+total+' / 20 項目チェック済み';
+    document.getElementById('resultMessage').textContent = rank.message;
+    setTimeout(() => resultPanel.classList.add('visible'), 80);
+    setTimeout(() => resultPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 150);
+  }
+
+  function resetAll() {
+    checked.fill(false);
+    items.forEach(item => item.classList.remove('checked'));
+    tiles.forEach(t => t.classList.remove('lit'));
+    resultPanel.classList.remove('visible');
+    judgeBtnWrap.style.display = 'none';
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
